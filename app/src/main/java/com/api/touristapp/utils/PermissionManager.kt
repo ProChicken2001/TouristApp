@@ -30,10 +30,11 @@ fun RequestPermissions(
     permissionLauncher.launch(permissions)
 }
 
-@Composable
 fun CheckPermissions(
     context: Context,
     permissions: Array<String>,
+    onPermissionsGranted: () -> Unit,
+    onPermissionsFailed: () -> Unit
 ){
     val allPermissionsGranted = permissions.all {
         permission ->
@@ -42,8 +43,8 @@ fun CheckPermissions(
     }
 
     if(allPermissionsGranted){
-        Toast.makeText(context, "PERMISOS CONCEDIDOS", Toast.LENGTH_SHORT).show()
+        onPermissionsGranted()
     }else{
-        Toast.makeText(context, "PERMISOS DENEGADOS", Toast.LENGTH_SHORT).show()
+        onPermissionsFailed()
     }
 }

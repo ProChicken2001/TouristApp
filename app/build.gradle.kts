@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.camera.extensions)
 
     implementation(libs.coil)
+    implementation(libs.coil.gif)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
