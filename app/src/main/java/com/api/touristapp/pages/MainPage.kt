@@ -2,7 +2,10 @@ package com.api.touristapp.pages
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
+import android.text.BoringLayout
 import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +28,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,35 +54,12 @@ import coil.size.Size
 import com.api.touristapp.R
 import com.api.touristapp.ui.theme.TouristAppTheme
 import com.api.touristapp.utils.CheckPermissions
+import com.api.touristapp.utils.GetPermissionsLauncher
 
 @Composable
 fun MainPage(
     navController: NavHostController
 ){
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        CheckPermissions(
-            context,
-            arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_MEDIA_IMAGES),
-            onPermissionsGranted = {
-                Toast
-                    .makeText(
-                        context,
-                        "CAMARA: PERMISOS CONCEDIDOS",
-                        Toast.LENGTH_SHORT)
-                    .show()
-            },
-            onPermissionsFailed = {
-                Toast
-                    .makeText(
-                        context,
-                        "CAMARA: PERMISOS DENEGADOS",
-                        Toast.LENGTH_SHORT)
-                    .show()
-            }
-        )
-    }
 
     Scaffold(
         topBar = {
@@ -153,19 +137,78 @@ private fun TopBar(){
 //-----------------------------------------------------------------[BODY MAIN]
 
 @Composable
-private fun Body(){
+private fun Body(
+){
+    val context = LocalContext.current
+    var isPermissionsGranted by remember { mutableStateOf(false) }
+
+    val permissionlauncher = GetPermissionsLauncher(
+        onPermissionsFailed = {
+            Toast.makeText(
+                context,
+                "PERMISOS DENEGADOS",
+                Toast.LENGTH_SHORT
+            ).show()
+        },
+        onPermissionsGranted = { isPermissionsGranted = true },
+    )
+
+    LaunchedEffect(Unit) {
+        CheckPermissions(
+            context,
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+            ),
+            onPermissionsGranted = {
+                Toast
+                    .makeText(
+                        context,
+                        "CAMARA: PERMISOS CONCEDIDOS",
+                        Toast.LENGTH_SHORT)
+                    .show()
+            },
+            onPermissionsFailed = {
+                Toast
+                    .makeText(
+                        context,
+                        "CAMARA: PERMISOS DENEGADOS",
+                        Toast.LENGTH_SHORT)
+                    .show()
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .padding(top = 15.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(45.dp)
     ) {
-        BodyOptions()
+        BodyOptions(
+            context,
+            isPermissionsGranted,
+        ){
+            permissionlauncher.launch(
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                )
+            )
+        }
     }
 }
 
+//-----------------------------------------------------------------[BODY OPTIONS]
+
 @Composable
-private fun BodyOptions(){
+private fun BodyOptions(
+    context: Context,
+    isPermissionsGranted: Boolean,
+    launcher: () -> Unit
+){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -175,7 +218,13 @@ private fun BodyOptions(){
         ElevatedCard(
             modifier = Modifier
                 .weight(0.5f),
-            onClick = {},
+            onClick = {
+                if(isPermissionsGranted){
+                    Toast.makeText(context, "PERMISOS CONCEDIDOS", Toast.LENGTH_SHORT).show()
+                }else{
+                    launcher()
+                }
+            },
         ) {
             Column(
                 modifier = Modifier
@@ -197,7 +246,13 @@ private fun BodyOptions(){
         ElevatedCard(
             modifier = Modifier
                 .weight(0.5f),
-            onClick = {},
+            onClick = {
+                if(isPermissionsGranted){
+                    Toast.makeText(context, "PERMISOS CONCEDIDOS", Toast.LENGTH_SHORT).show()
+                }else{
+                    launcher()
+                }
+            },
         ) {
             Column(
                 modifier = Modifier
@@ -226,7 +281,13 @@ private fun BodyOptions(){
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth(0.75f),
-            onClick = {},
+            onClick = {
+                if(isPermissionsGranted){
+                    Toast.makeText(context, "PERMISOS CONCEDIDOS", Toast.LENGTH_SHORT).show()
+                }else{
+                    launcher()
+                }
+            },
         ) {
             Column(
                 modifier = Modifier
@@ -246,6 +307,8 @@ private fun BodyOptions(){
 
     }
 }
+
+//-----------------------------------------------------------------[GIF IMAGES]
 
 @Composable
 private fun GifImage(
