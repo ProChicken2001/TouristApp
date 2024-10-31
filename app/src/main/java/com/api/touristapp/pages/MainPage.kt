@@ -52,6 +52,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.size.Size
 import com.api.touristapp.R
+import com.api.touristapp.routes.Routes
 import com.api.touristapp.ui.theme.TouristAppTheme
 import com.api.touristapp.utils.CheckPermissions
 import com.api.touristapp.utils.GetPermissionsLauncher
@@ -79,14 +80,14 @@ fun MainPage(
             ,
             verticalArrangement = Arrangement.Center
         ) {
-            Body()
+            Body(navController)
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun MainPagePreview(){
+private fun Preview(){
 
     TouristAppTheme(
         dynamicColor = false
@@ -138,6 +139,7 @@ private fun TopBar(){
 
 @Composable
 private fun Body(
+    navController: NavHostController
 ){
     val context = LocalContext.current
     var isPermissionsGranted by remember { mutableStateOf(false) }
@@ -162,6 +164,7 @@ private fun Body(
                 Manifest.permission.READ_MEDIA_VIDEO,
             ),
             onPermissionsGranted = {
+                isPermissionsGranted = true
                 Toast
                     .makeText(
                         context,
@@ -170,6 +173,7 @@ private fun Body(
                     .show()
             },
             onPermissionsFailed = {
+                isPermissionsGranted = false
                 Toast
                     .makeText(
                         context,
@@ -189,6 +193,7 @@ private fun Body(
         BodyOptions(
             context,
             isPermissionsGranted,
+            navController
         ){
             permissionlauncher.launch(
                 arrayOf(
@@ -207,6 +212,7 @@ private fun Body(
 private fun BodyOptions(
     context: Context,
     isPermissionsGranted: Boolean,
+    navController: NavHostController,
     launcher: () -> Unit
 ){
     Row(
@@ -220,7 +226,7 @@ private fun BodyOptions(
                 .weight(0.5f),
             onClick = {
                 if(isPermissionsGranted){
-                    Toast.makeText(context, "PERMISOS CONCEDIDOS", Toast.LENGTH_SHORT).show()
+                    navController.navigate(Routes.FotoRoute.route)
                 }else{
                     launcher()
                 }
@@ -248,7 +254,7 @@ private fun BodyOptions(
                 .weight(0.5f),
             onClick = {
                 if(isPermissionsGranted){
-                    Toast.makeText(context, "PERMISOS CONCEDIDOS", Toast.LENGTH_SHORT).show()
+
                 }else{
                     launcher()
                 }
@@ -283,7 +289,7 @@ private fun BodyOptions(
                 .fillMaxWidth(0.75f),
             onClick = {
                 if(isPermissionsGranted){
-                    Toast.makeText(context, "PERMISOS CONCEDIDOS", Toast.LENGTH_SHORT).show()
+
                 }else{
                     launcher()
                 }
