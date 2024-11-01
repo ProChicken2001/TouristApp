@@ -3,9 +3,7 @@ package com.api.touristapp.pages
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.text.BoringLayout
 import android.widget.Toast
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -160,6 +158,7 @@ private fun Body(
             context,
             arrayOf(
                 Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_MEDIA_IMAGES,
                 Manifest.permission.READ_MEDIA_VIDEO,
             ),
@@ -198,8 +197,9 @@ private fun Body(
             permissionlauncher.launch(
                 arrayOf(
                     Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO,
                     Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO
+                    Manifest.permission.READ_MEDIA_VIDEO,
                 )
             )
         }
@@ -254,7 +254,7 @@ private fun BodyOptions(
                 .weight(0.5f),
             onClick = {
                 if(isPermissionsGranted){
-
+                    navController.navigate(Routes.VideoRoute.route)
                 }else{
                     launcher()
                 }

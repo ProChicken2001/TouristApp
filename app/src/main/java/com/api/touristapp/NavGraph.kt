@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.api.touristapp.pages.FotoPage
 import com.api.touristapp.pages.MainPage
+import com.api.touristapp.pages.VideoPage
 import com.api.touristapp.routes.Routes
 
 @Composable
@@ -26,6 +27,12 @@ fun SetupNavGraph(
             route = Routes.FotoRoute.route
         ){
             FotoPage(navController)
+        }
+
+        composable(
+            route = Routes.VideoRoute.route
+        ){
+            VideoPage(navController)
         }
     }
 }
