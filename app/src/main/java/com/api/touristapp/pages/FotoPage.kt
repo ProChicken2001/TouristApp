@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
 import androidx.camera.core.CameraControl
-import androidx.camera.core.CameraProvider
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -24,10 +23,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.AndroidUriHandler
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,6 +54,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.api.touristapp.R
+import com.api.touristapp.routes.Routes
 import androidx.camera.core.Preview as CameraCorePreview
 import com.api.touristapp.ui.theme.TouristAppTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -106,6 +109,7 @@ fun FotoPage(
                 "NO SE PUEDE INICIALIZAR LA CAMARA",
                 Toast.LENGTH_SHORT
             ).show()
+            navController.navigate(Routes.MainRoute.route)
         }
 
     }
@@ -126,20 +130,26 @@ fun FotoPage(
             .background(color = Color.Black),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AndroidView(
-            factory = { previewView },
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.85f)
-                .pointerInput(Unit){
-                    detectTransformGestures{
-                            _, _, zoomChange, _ ->
-                        val newZoom = (currentZoom * zoomChange).coerceIn(1f, 10f)
-                        currentZoom = newZoom
-                        cameraControl?.setZoomRatio(newZoom)
+        ){
+            AndroidView(
+                factory = { previewView },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.80f)
+                    .pointerInput(Unit){
+                        detectTransformGestures{
+                                _, _, zoomChange, _ ->
+                            val newZoom = (currentZoom * zoomChange).coerceIn(1f, 10f)
+                            currentZoom = newZoom
+                            cameraControl?.setZoomRatio(newZoom)
+                        }
                     }
-                }
-        )
+            )
+            TopOptions(navController)
+        }
 
         Row(
             modifier = Modifier
@@ -162,6 +172,19 @@ fun FotoPage(
                 onClick = {
                     coroutineScope.launch {
                         imageUri = savePhoto(context, imageCaptured = imageCapture )
+                        if(imageUri != null){
+                            Toast.makeText(
+                                context,
+                                "FOTO GUARDADA CON EXITO",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }else{
+                            Toast.makeText(
+                                context,
+                                "NO SE PUDO GUARDAR LA FOTO",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 },
                 shape = CircleShape,
@@ -191,6 +214,33 @@ private fun Preview(){
     ) {
         FotoPage(rememberNavController())
     }
+}
+
+//-----------------------------------------------------------------[TOP OPTIONS]
+@Composable
+private fun TopOptions(
+    navController: NavHostController
+){
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 45.dp, start = 15.dp, end = 15.dp)
+    ) {
+        IconButton(
+            onClick = { navController.navigate(Routes.MainRoute.route) },
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = Color.White,
+                containerColor = colorResource(R.color.optBtnExitCamera)
+            )
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "flash",
+            )
+        }
+    }
+
 }
 
 //-----------------------------------------------------------------[FUNCTIONS]
