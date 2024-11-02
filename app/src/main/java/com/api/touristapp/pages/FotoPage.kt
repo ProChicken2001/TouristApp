@@ -41,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.AndroidUriHandler
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -228,7 +227,7 @@ private fun TopOptions(
             .padding(top = 45.dp, start = 15.dp, end = 15.dp)
     ) {
         IconButton(
-            onClick = { navController.navigate(Routes.MainRoute.route) },
+            onClick = { navController.popBackStack() },
             colors = IconButtonDefaults.iconButtonColors(
                 contentColor = Color.White,
                 containerColor = colorResource(R.color.optBtnExitCamera)

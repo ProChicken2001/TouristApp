@@ -190,7 +190,6 @@ private fun Body(
         verticalArrangement = Arrangement.spacedBy(45.dp)
     ) {
         BodyOptions(
-            context,
             isPermissionsGranted,
             navController
         ){
@@ -210,7 +209,6 @@ private fun Body(
 
 @Composable
 private fun BodyOptions(
-    context: Context,
     isPermissionsGranted: Boolean,
     navController: NavHostController,
     launcher: () -> Unit
@@ -289,7 +287,7 @@ private fun BodyOptions(
                 .fillMaxWidth(0.75f),
             onClick = {
                 if(isPermissionsGranted){
-
+                    navController.navigate(Routes.GalRoute.route)
                 }else{
                     launcher()
                 }
